@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "devopslearningventra/busapp-nodejs:${BUILD_NUMBER}"
+        NODE_HOME = "C:\\Program Files\\nodejs"
     }
 
     stages {
@@ -13,19 +14,11 @@ pipeline {
             }
         }
 
-        stage('Check Environment') {
-            steps {
-                bat 'echo PATH=%PATH%'
-                bat 'where node'
-                bat 'where npm'
-                bat 'node -v'
-                bat 'npm -v'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                bat '"%NODE_HOME%\\node.exe" -v'
+                bat '"%NODE_HOME%\\npm.cmd" -v'
+                bat '"%NODE_HOME%\\npm.cmd" install'
             }
         }
 
