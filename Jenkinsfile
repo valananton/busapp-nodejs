@@ -33,15 +33,25 @@ pipeline {
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'dockerhub-credential',
-                        usernameVariable: 'devopslearningventra',
-                        passwordVariable: 'Shakthyshree@09'
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
                     )
                 ]) {
                     bat '''
-                    docker login -u %devopslearningventra% -p %Shakthyshree@09%
+                    docker login -u %DOCKER_USER% -p %DOCKER_PASS%
                     docker push %IMAGE_NAME%
                     '''
                 }
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                bat '''
+                docker stop busapp || exit 0
+                docker rm busapp || exit 0
+                docker run -d --name busapp -p 3000:3000 %IMAGE_NAME%
+                '''
             }
         }
     }
