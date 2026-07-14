@@ -24,18 +24,20 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat """
-                    "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
-                    -Dsonar.projectKey=busapp-nodejs ^
-                    -Dsonar.projectName=busapp-nodejs ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.host.url=http://localhost:9000
-                    """
-                }
-            }
+    steps {
+        withSonarQubeEnv('SonarQube') {
+            bat "\"%SCANNER_HOME%\\bin\\sonar-scanner.bat\""
         }
+    }
+}
+
+        stage('Quality Gate') {
+    steps {
+        timeout(time: 2, unit: 'MINUTES') {
+            waitForQualityGate abortPipeline: true
+        }
+    }
+}
 
         stage('Build Docker Image') {
             steps {
