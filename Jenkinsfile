@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "devopslearningventra/busapp-nodejs:${BUILD_NUMBER}"
         NODE_HOME = "C:\\Program Files\\nodejs"
+        SCANNER_HOME = tool 'SonarScanner'
     }
 
     stages {
@@ -19,6 +20,20 @@ pipeline {
                 bat '"%NODE_HOME%\\node.exe" -v'
                 bat '"%NODE_HOME%\\npm.cmd" -v'
                 bat '"%NODE_HOME%\\npm.cmd" install'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat """
+                    "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
+                    -Dsonar.projectKey=busapp-nodejs ^
+                    -Dsonar.projectName=busapp-nodejs ^
+                    -Dsonar.sources=. ^
+                    -Dsonar.host.url=http://localhost:9000
+                    """
+                }
             }
         }
 
